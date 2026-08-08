@@ -1,0 +1,164 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  width: 100%;
+  scroll-behavior: smooth;
+}
+
+/* ── Hide scrollbars ── */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Cursors ── */
+button,
+a,
+[role="button"],
+label[for],
+select,
+summary {
+  cursor: pointer;
+}
+
+button:active,
+a:active,
+[role="button"]:active {
+  transform: scale(0.96);
+}
+
+button,
+a {
+  transition-property: opacity, transform, background-color, background-image, color, box-shadow, border-color;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
+}
+
+/* ════════════════════════════════════════════════════════
+   FUTURISTIC DARK THEME — CSS VARIABLES
+   All values are injected dynamically by ThemeContext.jsx
+   ════════════════════════════════════════════════════════ */
+
+:root {
+  /* Default: Cyber Emerald & Cyan */
+  --bg-base: #0B132B;
+  --bg-secondary: #1C2541;
+  --card-bg: rgba(19, 28, 49, 0.85);
+  --card-border: rgba(30, 41, 59, 0.80);
+  --sidebar-bg: rgba(11, 19, 43, 0.92);
+  --sidebar-border: rgba(255,255,255,0.06);
+  --header-bg: rgba(11, 19, 43, 0.75);
+  --header-border: rgba(255,255,255,0.06);
+  --inner-bg: rgba(30, 41, 59, 0.60);
+  --inner-border: rgba(255,255,255,0.06);
+  --accent-primary: #10B981;
+  --accent-secondary: #06B6D4;
+  --accent-from: #10B981;
+  --accent-to: #06B6D4;
+  --accent-gradient: linear-gradient(135deg, #10B981, #06B6D4);
+  --accent-glow: rgba(16,185,129,0.25);
+  --accent-soft: rgba(16,185,129,0.10);
+  --accent-border: rgba(16,185,129,0.25);
+  --orb-1: rgba(16,185,129,0.18);
+  --orb-2: rgba(6,182,212,0.14);
+  --orb-3: rgba(14,165,233,0.10);
+}
+
+/* ════════════════════════════════════════════════════════
+   BASE STYLES
+   ════════════════════════════════════════════════════════ */
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  font-family: Inter, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-base);
+  background-image: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-secondary) 60%, var(--bg-base) 100%);
+  color: #e2e8f0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  min-height: 100svh;
+}
+
+::selection {
+  background: var(--accent-primary);
+  color: #000;
+}
+
+/* ── Utility: Accent Gradient Background ── */
+.bg-gradient-accent {
+  background: var(--accent-gradient);
+}
+
+/* ── Utility: Neon glow effect ── */
+.neon-glow {
+  box-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-soft);
+}
+
+/* ── Utility: Glass card base ── */
+.glass-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* ── Subtle animated gradient border effect on hover ── */
+@keyframes pulse-border {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1.0; }
+}
+
+/* ── Grid dot pattern overlay (decorative background texture) ── */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Accent top-left ambient radial glow ── */
+body::after {
+  content: "";
+  position: fixed;
+  top: -200px;
+  left: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--accent-soft), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  transition: background 0.6s ease;
+}
+
+/* ── LandingPage ticker marquee animation ── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 24s linear infinite;
+  width: max-content;
+}
+
+/* ── ReactBits ShinyText metallic sweep animation ── */
+@keyframes shine-sweep {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
