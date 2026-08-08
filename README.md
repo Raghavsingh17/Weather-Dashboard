@@ -1,3 +1,6 @@
+# Demo Link
+https://weatherlyboard.netlify.app/
+
 # 🌤️ Weatherly - Advanced Weather Dashboard
 
 A modern, responsive weather dashboard built with **React**, **Vite**, and **Tailwind CSS** that provides real-time weather data and comprehensive forecasts using the **OpenWeather API**.
