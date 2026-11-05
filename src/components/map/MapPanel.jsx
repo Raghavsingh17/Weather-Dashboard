@@ -2,7 +2,15 @@ import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { FaCloudRain, FaTemperatureHigh, FaWind, FaCloud } from "react-icons/fa";
+import {
+  FaCloudRain,
+  FaTemperatureHigh,
+  FaWind,
+  FaCloud,
+  FaMapMarkedAlt,
+  FaSatellite,
+  FaMoon,
+} from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useThemeContext } from "../../context/ThemeContext";
 
@@ -39,6 +47,7 @@ function MapController({ center }) {
 
 export default function MapPanel({ weather, locations = [], onSelectLocation }) {
   const [activeLayer, setActiveLayer] = useState("precipitation_new");
+  const [baseStyle, setBaseStyle] = useState("streets");
   const { cardBg, cardStyle, innerBg, innerStyle, textPrimary, textSecondary, textMuted, preset } = useThemeContext();
 
   if (!weather?.coord) {
@@ -51,6 +60,24 @@ export default function MapPanel({ weather, locations = [], onSelectLocation }) 
 
   const { lat, lon } = weather.coord;
   const center = [lat, lon];
+
+  const baseStyles = [
+    {
+      id: "streets",
+      name: "Standard",
+      icon: FaMapMarkedAlt,
+    },
+    {
+      id: "satellite",
+      name: "Satellite",
+      icon: FaSatellite,
+    },
+    {
+      id: "dark",
+      name: "Dark Tech",
+      icon: FaMoon,
+    },
+  ];
 
   const mapLayers = [
     {
@@ -97,34 +124,74 @@ export default function MapPanel({ weather, locations = [], onSelectLocation }) 
           </h3>
         </div>
 
-        {/* Map Layer Switcher Buttons */}
-        <div
-          className="flex flex-wrap gap-1.5 rounded-2xl p-1.5 border backdrop-blur-md"
-          style={{ backgroundColor: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
-        >
-          {mapLayers.map((layer) => {
-            const Icon = layer.icon;
-            const isActive = activeLayer === layer.id;
-            return (
-              <button
-                key={layer.id}
-                onClick={() => setActiveLayer(layer.id)}
-                className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-black transition-all"
-                style={
-                  isActive
-                    ? {
-                        background: `linear-gradient(135deg, ${preset.accentFrom}, ${preset.accentTo})`,
-                        color: "#fff",
-                        boxShadow: `0 0 12px ${preset.accentPrimary}40`,
-                      }
-                    : { color: "#64748b" }
-                }
-              >
-                <Icon size={12} />
-                <span>{layer.name}</span>
-              </button>
-            );
-          })}
+        {/* Controls Container: Base Map Style & Weather Layers */}
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Base Map Switcher */}
+          <div
+            className="flex items-center gap-1 rounded-2xl p-1.5 border backdrop-blur-md"
+            style={{ backgroundColor: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
+          >
+            <span className="px-2 text-[10px] font-black uppercase tracking-wider text-slate-400">
+              Map:
+            </span>
+            {baseStyles.map((style) => {
+              const Icon = style.icon;
+              const isActive = baseStyle === style.id;
+              return (
+                <button
+                  key={style.id}
+                  onClick={() => setBaseStyle(style.id)}
+                  className="flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-bold transition-all"
+                  style={
+                    isActive
+                      ? {
+                          background: `linear-gradient(135deg, ${preset.accentFrom}, ${preset.accentTo})`,
+                          color: "#fff",
+                          boxShadow: `0 0 10px ${preset.accentPrimary}40`,
+                        }
+                      : { color: "#64748b" }
+                  }
+                  title={`Switch to ${style.name} base map`}
+                >
+                  <Icon size={11} />
+                  <span>{style.name}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* OpenWeather Layer Switcher Buttons */}
+          <div
+            className="flex flex-wrap gap-1 rounded-2xl p-1.5 border backdrop-blur-md"
+            style={{ backgroundColor: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.08)" }}
+          >
+            <span className="px-2 self-center text-[10px] font-black uppercase tracking-wider text-slate-400">
+              Radar:
+            </span>
+            {mapLayers.map((layer) => {
+              const Icon = layer.icon;
+              const isActive = activeLayer === layer.id;
+              return (
+                <button
+                  key={layer.id}
+                  onClick={() => setActiveLayer(layer.id)}
+                  className="flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-bold transition-all"
+                  style={
+                    isActive
+                      ? {
+                          background: `linear-gradient(135deg, ${preset.accentFrom}, ${preset.accentTo})`,
+                          color: "#fff",
+                          boxShadow: `0 0 10px ${preset.accentPrimary}40`,
+                        }
+                      : { color: "#64748b" }
+                  }
+                >
+                  <Icon size={11} />
+                  <span>{layer.name}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -140,15 +207,37 @@ export default function MapPanel({ weather, locations = [], onSelectLocation }) 
           >
             <MapController center={center} />
 
-            {/* Base Tile Layer — always dark for futuristic look */}
-            <TileLayer
-              attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            />
+            {/* Base Tile Layer */}
+            {baseStyle === "streets" && (
+              <TileLayer
+                key="streets"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                maxZoom={19}
+              />
+            )}
+            {baseStyle === "satellite" && (
+              <TileLayer
+                key="satellite"
+                attribution="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and GIS User Community"
+                url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                maxZoom={18}
+              />
+            )}
+            {baseStyle === "dark" && (
+              <TileLayer
+                key="dark"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                className="leaflet-dark-tiles"
+                maxZoom={19}
+              />
+            )}
 
             {/* OpenWeather Weather Overlay Layer */}
             {API_KEY && (
               <TileLayer
+                key={`weather-${activeLayer}-${baseStyle}`}
                 url={`https://tile.openweathermap.org/map/${activeLayer}/{z}/{x}/{y}.png?appid=${API_KEY}`}
                 opacity={0.65}
               />
